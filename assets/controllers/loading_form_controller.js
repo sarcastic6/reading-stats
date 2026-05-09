@@ -26,15 +26,22 @@ export default class extends Controller {
         this.element.addEventListener('submit', this.#onSubmit.bind(this));
     }
 
-    #onSubmit() {
+    #onSubmit(event) {
         if (this.hasSubmitTarget) {
-            const btn = this.submitTarget;
+            const btn = this.submitTargets.includes(event.submitter)
+                ? event.submitter
+                : this.submitTarget;
 
             // Replace button content with a spinner + loading text.
-            btn.disabled = true;
-            btn.innerHTML =
-                '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>'
-                + btn.dataset.loadingText;
+            // Defer disabling until after the browser has collected form data.
+            // Disabling the clicked submit button synchronously can drop its
+            // name/value pair, which matters for multi-action forms.
+            setTimeout(() => {
+                btn.disabled = true;
+                btn.innerHTML =
+                    '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>'
+                    + btn.dataset.loadingText;
+            }, 0);
         }
 
         if (this.hasFieldTarget) {

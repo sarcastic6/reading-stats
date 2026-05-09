@@ -10,6 +10,7 @@ use App\Form\WorkFormType;
 use App\Repository\MetadataRepository;
 use App\Repository\MetadataTypeRepository;
 use App\Repository\WorkRepository;
+use App\Scraper\Ao3Scraper;
 use App\Scraper\AuthRequiredException;
 use App\Scraper\RateLimitException;
 use App\Scraper\ScrapedWorkDto;
@@ -348,6 +349,7 @@ class WorkController extends AbstractController
             }
 
             $url = trim($request->request->getString('import_url'));
+            $importMode = $request->request->getString('import_mode', 'url');
 
             if ($url === '') {
                 $this->addFlash('error', 'import.url.not_blank');
@@ -376,6 +378,16 @@ class WorkController extends AbstractController
                 $this->addFlash('info', 'import.info.existing_work_used');
 
                 return $this->redirectToRoute('app_reading_entry_new', ['workId' => $existing->getId()]);
+            }
+
+            if ($importMode === 'paste') {
+                if (!$scraper instanceof Ao3Scraper) {
+                    $this->addFlash('error', 'import.error.unsupported_url');
+
+                    return $this->redirectToRoute('app_work_select');
+                }
+
+                return $this->redirectToRoute('app_work_import_paste', ['url' => $canonicalUrl]);
             }
 
             try {
@@ -443,6 +455,77 @@ class WorkController extends AbstractController
         return $this->render('work/select.html.twig', [
             'works' => $works,
             'query' => $query,
+        ]);
+    }
+
+    #[Route('/import/paste', name: 'app_work_import_paste', methods: ['GET', 'POST'])]
+    public function importPaste(Request $request): Response
+    {
+        $url = $request->isMethod('POST')
+            ? trim($request->request->getString('import_url'))
+            : trim($request->query->getString('url'));
+
+        if ($url === '') {
+            $this->addFlash('error', 'import.url.not_blank');
+
+            return $this->redirectToRoute('app_work_select');
+        }
+
+        if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+            $this->addFlash('error', 'import.url.invalid');
+
+            return $this->redirectToRoute('app_work_select');
+        }
+
+        $scraper = $this->scraperRegistry->getScraperForUrl($url);
+        if (!$scraper instanceof Ao3Scraper) {
+            $this->addFlash('error', 'import.error.unsupported_url');
+
+            return $this->redirectToRoute('app_work_select');
+        }
+
+        $canonicalUrl = $scraper->canonicalizeUrl($url);
+        $existing = $this->workRepository->findByLink($canonicalUrl);
+        if ($existing !== null) {
+            $this->addFlash('info', 'import.info.existing_work_used');
+
+            return $this->redirectToRoute('app_reading_entry_new', ['workId' => $existing->getId()]);
+        }
+
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('import_paste', $request->request->getString('_paste_token'))) {
+                throw $this->createAccessDeniedException();
+            }
+
+            $pastedHtml = trim($request->request->getString('ao3_paste_html'));
+            $pastedText = trim($request->request->getString('ao3_paste_text'));
+            $content = $pastedHtml !== '' ? $pastedHtml : $pastedText;
+
+            if ($content === '') {
+                $this->addFlash('error', 'import.paste.not_blank');
+
+                return $this->redirectToRoute('app_work_import_paste', ['url' => $canonicalUrl]);
+            }
+
+            try {
+                $scraped = $scraper->parsePastedWorkHtml($content, $canonicalUrl);
+            } catch (ScrapingException $e) {
+                $this->logger->error('Import paste parse failed', [
+                    'url'   => $canonicalUrl,
+                    'error' => $e->getMessage(),
+                ]);
+                $this->addFlash('error', 'import.error.paste_failed');
+
+                return $this->redirectToRoute('app_work_import_paste', ['url' => $canonicalUrl]);
+            }
+
+            $request->getSession()->set('import_scraped_work', $scraped);
+
+            return $this->redirectToRoute('app_work_new');
+        }
+
+        return $this->render('work/import_paste.html.twig', [
+            'url' => $canonicalUrl,
         ]);
     }
 }

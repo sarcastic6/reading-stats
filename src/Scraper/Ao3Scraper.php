@@ -429,6 +429,25 @@ class Ao3Scraper implements ScraperInterface
         return $this->normalizeUrl($url);
     }
 
+    public function parsePastedWorkHtml(string $html, string $url): ScrapedWorkDto
+    {
+        if (!$this->supports($url)) {
+            throw new \InvalidArgumentException(
+                sprintf('Ao3Scraper does not support URL: %s', $url),
+            );
+        }
+
+        $dto = $this->parse($html, $this->normalizeUrl($url));
+        if ($dto->title === null || $dto->metadata === []) {
+            throw new ScrapingException(
+                $url,
+                'Pasted AO3 page content did not contain recognizable work metadata.',
+            );
+        }
+
+        return $dto;
+    }
+
     private function normalizeUrl(string $url): string
     {
         // Ensure https scheme
@@ -531,7 +550,7 @@ class Ao3Scraper implements ScraperInterface
                     $href = $node->attr('href');
                     $authors[] = [
                         'name' => $name,
-                        'link' => $href !== null ? 'https://' . self::AO3_HOST . $href : null,
+                        'link' => $this->normalizeAo3Link($href),
                     ];
                 }
             });
@@ -1210,7 +1229,7 @@ class Ao3Scraper implements ScraperInterface
                         $href = $node->attr('href');
                         $tags[] = [
                             'name' => $name,
-                            'link' => $href !== null ? 'https://' . self::AO3_HOST . $href : null,
+                            'link' => $this->normalizeAo3Link($href),
                         ];
                     }
                 });
@@ -1227,5 +1246,27 @@ class Ao3Scraper implements ScraperInterface
         }
 
         return $metadata;
+    }
+
+    private function normalizeAo3Link(?string $href): ?string
+    {
+        if ($href === null || trim($href) === '') {
+            return null;
+        }
+
+        if (str_starts_with($href, '/')) {
+            return 'https://' . self::AO3_HOST . $href;
+        }
+
+        if (!str_starts_with($href, 'http')) {
+            return null;
+        }
+
+        $host = parse_url($href, PHP_URL_HOST);
+        if ($host !== self::AO3_HOST && $host !== 'www.' . self::AO3_HOST) {
+            return null;
+        }
+
+        return $href;
     }
 }

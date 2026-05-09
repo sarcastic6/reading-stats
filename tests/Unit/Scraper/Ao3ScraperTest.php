@@ -189,6 +189,19 @@ class Ao3ScraperTest extends TestCase
         $this->assertContains('Happy Ending', array_column($dto->metadata['Tag'], 'name'));
     }
 
+    public function test_parse_pasted_work_html_accepts_absolute_links(): void
+    {
+        $html = str_replace('href="/', 'href="https://archiveofourown.org/', $this->fixture('complete_work'));
+        $scraper = $this->makeScraperWithHtml('');
+
+        $dto = $scraper->parsePastedWorkHtml($html, 'https://archiveofourown.org/works/11111/chapters/22222');
+
+        $this->assertSame('https://archiveofourown.org/works/11111', $dto->sourceUrl);
+        $this->assertSame('Test Complete Work Title', $dto->title);
+        $this->assertSame('https://archiveofourown.org/users/TestAuthor/pseuds/TestAuthor', $dto->authors[0]['link']);
+        $this->assertSame('https://archiveofourown.org/tags/General+Audiences/works', $dto->metadata['Rating'][0]['link']);
+    }
+
     // --- scrape(): ongoing work (chapters "X/?") ---
 
     public function test_scrape_ongoing_work_chapters_not_complete(): void

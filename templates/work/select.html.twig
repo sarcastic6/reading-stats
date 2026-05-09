@@ -25,10 +25,20 @@
                    autocomplete="off"
                    data-loading-form-target="field">
             <button type="submit" class="btn btn-primary"
+                    name="import_mode"
+                    value="url"
                     data-loading-form-target="submit"
                     data-loading-text="{{ 'import.submit_loading'|trans }}">
                 <i class="bi bi-cloud-download" aria-hidden="true"></i>
-                {{ 'import.submit'|trans }}
+                {{ 'import.download_submit'|trans }}
+            </button>
+            <button type="submit" class="btn btn-secondary"
+                    name="import_mode"
+                    value="paste"
+                    data-loading-form-target="submit"
+                    data-loading-text="{{ 'import.paste_continue_loading'|trans }}">
+                <i class="bi bi-clipboard-plus" aria-hidden="true"></i>
+                {{ 'import.paste_continue'|trans }}
             </button>
         </div>
         <div class="form-text">{{ 'import.url_help'|trans }}</div>

@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'import.paste_page.title'|trans }}{% endblock %}
+
+{% block body %}
+
+<div class="page-header">
+    <div class="page-header-text">
+        <h1 class="page-title">{{ 'import.paste_page.heading'|trans }}</h1>
+        <p class="page-subtitle">{{ 'import.paste_page.subtitle'|trans }}</p>
+    </div>
+</div>
+
+<div class="work-select-section mb-4">
+    <h2 class="h5 mb-3">{{ 'import.paste_page.instructions_heading'|trans }}</h2>
+    <ol class="mb-3">
+        <li>{{ 'import.paste_page.step_open'|trans }}</li>
+        <li>
+            {{ 'import.paste_page.step_select_prefix'|trans }}
+            <span class="text-nowrap"><kbd>Ctrl</kbd> + <kbd>A</kbd></span>
+            <span class="text-muted">{{ 'import.paste_page.step_select_or'|trans }}</span>
+            <span class="text-nowrap"><kbd>Cmd</kbd> + <kbd>A</kbd></span>
+            {{ 'import.paste_page.step_select_suffix'|trans }}
+        </li>
+        <li>
+            {{ 'import.paste_page.step_copy_prefix'|trans }}
+            <span class="text-nowrap"><kbd>Ctrl</kbd> + <kbd>C</kbd></span>
+            <span class="text-muted">{{ 'import.paste_page.step_select_or'|trans }}</span>
+            <span class="text-nowrap"><kbd>Cmd</kbd> + <kbd>C</kbd></span>
+            {{ 'import.paste_page.step_copy_suffix'|trans }}
+        </li>
+        <li>{{ 'import.paste_page.step_paste'|trans }}</li>
+    </ol>
+
+    <a href="{{ url|safe_url }}"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="btn btn-secondary">
+        <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+        {{ 'import.paste_page.open_ao3'|trans }}
+    </a>
+</div>
+
+<form method="post"
+      action="{{ path('app_work_import_paste') }}"
+      data-controller="loading-form">
+    <input type="hidden" name="_paste_token" value="{{ csrf_token('import_paste') }}">
+    <input type="hidden" name="import_url" value="{{ url }}">
+    <input type="hidden" id="ao3_paste_html" name="ao3_paste_html">
+
+    <div class="mb-3">
+        <label for="ao3_paste_text" class="form-label">{{ 'import.paste_field'|trans }}</label>
+        <textarea id="ao3_paste_text"
+                  name="ao3_paste_text"
+                  class="form-control"
+                  rows="12"
+                  placeholder="{{ 'import.paste_placeholder'|trans }}"
+                  data-loading-form-target="field"></textarea>
+        <div class="form-text">{{ 'import.paste_help'|trans }}</div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit"
+                class="btn btn-primary"
+                data-loading-form-target="submit"
+                data-loading-text="{{ 'import.paste_submit_loading'|trans }}">
+            <i class="bi bi-clipboard-check" aria-hidden="true"></i>
+            {{ 'import.paste_submit'|trans }}
+        </button>
+        <a href="{{ path('app_work_select') }}" class="btn btn-ghost">
+            {{ 'action.cancel'|trans }}
+        </a>
+    </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var pasteField = document.getElementById('ao3_paste_text');
+    var pasteHtml = document.getElementById('ao3_paste_html');
+    if (!pasteField || !pasteHtml) { return; }
+
+    pasteField.addEventListener('paste', function (event) {
+        var html = event.clipboardData ? event.clipboardData.getData('text/html') : '';
+        pasteHtml.value = html || '';
+    });
+});
+</script>
+{% endblock %}
