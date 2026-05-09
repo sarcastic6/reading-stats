@@ -142,16 +142,16 @@
         {% if entry.reviewStars %}
             <span class="stars-display" aria-label="{{ entry.reviewStars }} {{ 'entry.list.stars'|trans }}">
                 {%- for i in 1..5 -%}
-                    {{- i <= entry.reviewStars ? '★' : '☆' -}}
+                    {{- (i <= entry.reviewStars ? '<i class="bi bi-star-fill" aria-hidden="true"></i>' : '<i class="bi bi-star" aria-hidden="true"></i>')|raw -}}
                 {%- endfor -%}
             </span>
         {% else %}
             <span class="text-muted">—</span>
         {% endif %}
         {% if entry.spiceStars is not null %}
-            <div style="font-size: 0.75em; margin-top: 2px;">
-                {% if entry.spiceStars == 0 %}🚫
-                {% else %}{% for i in range(1, entry.spiceStars) %}🌶️{% endfor %}{% endif %}
+            <div style="font-size: 0.85em; margin-top: 2px;">
+                {% if entry.spiceStars == 0 %}<i class="bi bi-ban spice-icon" aria-hidden="true"></i>
+                {% else %}{% for i in range(1, entry.spiceStars) %}<i class="bi bi-fire spice-icon" aria-hidden="true"></i>{% endfor %}{% endif %}
             </div>
         {% endif %}
     </td>
@@ -285,14 +285,14 @@
                         {% if entry.reviewStars %}
                             <span class="stars-display" aria-label="{{ entry.reviewStars }} {{ 'entry.list.stars'|trans }}">
                                 {%- for i in 1..5 -%}
-                                    {{- i <= entry.reviewStars ? '★' : '☆' -}}
+                                    {{- (i <= entry.reviewStars ? '<i class="bi bi-star-fill" aria-hidden="true"></i>' : '<i class="bi bi-star" aria-hidden="true"></i>')|raw -}}
                                 {%- endfor -%}
                             </span>
                         {% endif %}
                         {% if entry.spiceStars is not null %}
                             <span>
-                                {% if entry.spiceStars == 0 %}🚫
-                                {% else %}{% for i in range(1, entry.spiceStars) %}🌶️{% endfor %}{% endif %}
+                                {% if entry.spiceStars == 0 %}<i class="bi bi-ban spice-icon" aria-hidden="true"></i>
+                                {% else %}{% for i in range(1, entry.spiceStars) %}<i class="bi bi-fire spice-icon" aria-hidden="true"></i>{% endfor %}{% endif %}
                             </span>
                         {% endif %}
                     </div>

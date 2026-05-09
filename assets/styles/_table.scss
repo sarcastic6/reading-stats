@@ -153,6 +153,16 @@
     color: #f4c430;
     letter-spacing: 1px;
     font-size: var(--text-sm);
+    white-space: nowrap;
+}
+
+.star-icon {
+    color: #f4c430;
+}
+
+.spice-icon {
+    color: #dc3545;
+    letter-spacing: 1px;
 }
 
 // Cover thumbnail cell — fixed-width column for the typographic cover art

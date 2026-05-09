@@ -50,6 +50,11 @@ a.nav-link,
 .stars-display {
     color: #f4c430;
     letter-spacing: 2px;
+    white-space: nowrap;
+}
+
+.star-icon {
+    color: #f4c430;
 }
 
 /* ===== Reading List ===== */

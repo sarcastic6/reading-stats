@@ -83,7 +83,7 @@
         <div class="stat-card">
             <div class="stat-card-value">
                 {% if summary.averageRating is not null %}
-                    ⭐ {{ summary.averageRating }}
+                    <i class="bi bi-star-fill star-icon" aria-hidden="true"></i> {{ summary.averageRating }}
                 {% else %}
                     —
                 {% endif %}
@@ -96,7 +96,7 @@
         <div class="stat-card">
             <div class="stat-card-value">
                 {% if summary.averageSpice is not null %}
-                    🌶 {{ summary.averageSpice }}
+                    <i class="bi bi-fire spice-icon" aria-hidden="true"></i> {{ summary.averageSpice }}
                 {% else %}
                     —
                 {% endif %}
@@ -505,7 +505,7 @@
                         <canvas
                             data-controller="chart"
                             data-chart-type-value="bar"
-                            data-chart-labels-value="{{ ratingDistributions.spice|keys|map(k => k == 0 ? '🚫' : '🌶️' ~ k)|json_encode }}"
+                            data-chart-labels-value="{{ ratingDistributions.spice|keys|map(k => k == 0 ? '🚫' : '🔥' ~ k)|json_encode }}"
                             data-chart-datasets-value="{{ [{'label': 'stats.chart.entries'|trans, 'data': ratingDistributions.spice|values, 'backgroundColor': 'rgba(180,70,70,0.70)', 'borderRadius': 4}]|json_encode }}"
                             data-chart-options-value="{{ {'plugins': {'legend': {'display': false}}, 'scales': {'y': {'ticks': {'precision': 0}, 'grid': {'color': 'rgba(221,232,228,0.6)'}}, 'x': {'grid': {'display': false}}}}|json_encode }}"
                             data-chart-urls-value="{{ chartUrls.spice|json_encode }}"

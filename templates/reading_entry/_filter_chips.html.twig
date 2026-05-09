@@ -41,7 +41,7 @@
         {% if filters.rating %}
             <a href="{{ path('app_reading_entry_list', filters|merge({'rating': ''})) }}"
                class="chip chip-filter">
-                {{ 'reading.filter.rating'|trans }}: {% for j in 1..filters.rating %}★{% endfor %}
+                {{ 'reading.filter.rating'|trans }}: {% for j in 1..filters.rating %}<i class="bi bi-star-fill star-icon" aria-hidden="true"></i>{% endfor %}
                 <i class="bi bi-x chip-filter-remove" aria-hidden="true"></i>
             </a>
         {% endif %}
@@ -49,8 +49,8 @@
             <a href="{{ path('app_reading_entry_list', filters|merge({'spiceExact': ''})) }}"
                class="chip chip-filter">
                 {{ 'reading.filter.spice'|trans }}:
-                {% if filters.spiceExact == '0' %}🚫
-                {% else %}{% for j in 1..filters.spiceExact %}🌶️{% endfor %}{% endif %}
+                {% if filters.spiceExact == '0' %}<i class="bi bi-ban spice-icon" aria-hidden="true"></i>
+                {% else %}{% for j in 1..filters.spiceExact %}<i class="bi bi-fire spice-icon" aria-hidden="true"></i>{% endfor %}{% endif %}
                 <i class="bi bi-x chip-filter-remove" aria-hidden="true"></i>
             </a>
         {% endif %}
@@ -58,8 +58,8 @@
             <a href="{{ path('app_reading_entry_list', filters|merge({'spice': ''})) }}"
                class="chip chip-filter">
                 {{ 'reading.filter.spice'|trans }}:
-                {% if filters.spice == '0' %}🚫
-                {% else %}{% for j in 1..filters.spice %}🌶️{% endfor %}+{% endif %}
+                {% if filters.spice == '0' %}<i class="bi bi-ban spice-icon" aria-hidden="true"></i>
+                {% else %}{% for j in 1..filters.spice %}<i class="bi bi-fire spice-icon" aria-hidden="true"></i>{% endfor %}+{% endif %}
                 <i class="bi bi-x chip-filter-remove" aria-hidden="true"></i>
             </a>
         {% endif %}

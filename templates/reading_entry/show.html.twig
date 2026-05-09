@@ -151,8 +151,10 @@
                                 <span style="text-transform: uppercase; letter-spacing: 0.05em; font-size: var(--text-xs); display: block; margin-bottom: 2px;">
                                     {{ 'reading.field.review_stars'|trans }}
                                 </span>
-                                <span aria-label="{{ entry.reviewStars }} {{ 'reading.field.review_stars'|trans }}">
-                                    {% for i in range(1, entry.reviewStars) %}⭐{% endfor %}
+                                <span class="stars-display" aria-label="{{ entry.reviewStars }} {{ 'reading.field.review_stars'|trans }}">
+                                    {%- for i in 1..5 -%}
+                                        {{- (i <= entry.reviewStars ? '<i class="bi bi-star-fill" aria-hidden="true"></i>' : '<i class="bi bi-star" aria-hidden="true"></i>')|raw -}}
+                                    {%- endfor -%}
                                 </span>
                             </div>
                         {% endif %}
@@ -162,10 +164,10 @@
                                     {{ 'reading.field.spice_stars'|trans }}
                                 </span>
                                 {% if entry.spiceStars == 0 %}
-                                    <span aria-label="No spice">🚫</span>
+                                    <span aria-label="No spice"><i class="bi bi-ban spice-icon" aria-hidden="true"></i></span>
                                 {% else %}
                                     <span aria-label="{{ entry.spiceStars }} out of 5">
-                                        {% for i in range(1, entry.spiceStars) %}🌶️{% endfor %}
+                                        {% for i in range(1, entry.spiceStars) %}<i class="bi bi-fire spice-icon" aria-hidden="true"></i>{% endfor %}
                                     </span>
                                 {% endif %}
                             </div>

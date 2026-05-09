@@ -81,7 +81,7 @@
                     </div>
                     <div class="stat-card-label">{{ 'stats.rankings.spotlight_best_rated'|trans }}</div>
                     <div class="spotlight-name" title="{{ topByReview.name }}">{{ topByReview.name }}</div>
-                    <div class="stat-card-sub">{{ topByReview.avgReview }} ★ {{ 'stats.rankings.spotlight_avg_review'|trans }}</div>
+                    <div class="stat-card-sub">{{ topByReview.avgReview }} <i class="bi bi-star-fill star-icon" aria-hidden="true"></i> {{ 'stats.rankings.spotlight_avg_review'|trans }}</div>
                 </div>
             </div>
         {% endif %}

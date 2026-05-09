@@ -86,7 +86,7 @@
                             <option value="">{{ 'reading.filter.any_rating'|trans }}</option>
                             {% for i in 1..5 %}
                                 <option value="{{ i }}" {% if filters.rating == (i ~ '') %}selected{% endif %}>
-                                    {% for j in 1..i %}★{% endfor %}
+                                    {% for j in 1..i %}⭐{% endfor %}
                                 </option>
                             {% endfor %}
                         </select>
@@ -98,7 +98,7 @@
                             <option value="0" {% if filters.spice == '0' %}selected{% endif %}>🚫 {{ 'reading.filter.no_spice'|trans }}</option>
                             {% for i in 1..5 %}
                                 <option value="{{ i }}" {% if filters.spice == (i ~ '') %}selected{% endif %}>
-                                    {% for j in 1..i %}🌶️{% endfor %}{% if i < 5 %}+{% endif %}
+                                    {% for j in 1..i %}🔥{% endfor %}{% if i < 5 %}+{% endif %}
                                 </option>
                             {% endfor %}
                         </select>
