@@ -240,6 +240,19 @@ class Ao3ScraperTest extends TestCase
         $this->assertStringContainsString('archiveofourown.org/series/99999', $dto->seriesUrl ?? '');
     }
 
+    public function test_scrape_series_work_ignores_navigation_links(): void
+    {
+        $scraper = $this->makeScraper([
+            new MockResponse($this->fixture('series_work_with_navigation_links'), ['http_code' => 200]),
+            new MockResponse('<html></html>', ['http_code' => 200]),
+        ]);
+        $dto = $scraper->scrape('https://archiveofourown.org/works/44444/chapters/55555');
+
+        $this->assertSame('Test Series Name', $dto->seriesName);
+        $this->assertSame(2, $dto->placeInSeries);
+        $this->assertSame('https://archiveofourown.org/series/99999', $dto->seriesUrl);
+    }
+
     // --- scrape(): minimal work (most optional fields missing) ---
 
     public function test_scrape_minimal_work_tolerates_missing_fields(): void

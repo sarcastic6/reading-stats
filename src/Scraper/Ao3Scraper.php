@@ -660,7 +660,15 @@ class Ao3Scraper implements ScraperInterface
             $seriesUrl = null;
             $placeInSeries = null;
 
-            $linkNode = $node->filter('a');
+            $seriesLinkSelector = implode(', ', [
+                'a[href^="/series/"]',
+                'a[href^="https://archiveofourown.org/series/"]',
+                'a[href^="http://archiveofourown.org/series/"]',
+                'a[href^="https://www.archiveofourown.org/series/"]',
+                'a[href^="http://www.archiveofourown.org/series/"]',
+            ]);
+
+            $linkNode = $node->filter($seriesLinkSelector);
             if ($linkNode->count() > 0) {
                 $seriesName = trim($linkNode->first()->text());
                 $href = $linkNode->first()->attr('href');
