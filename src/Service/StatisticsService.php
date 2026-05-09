@@ -86,6 +86,32 @@ class StatisticsService
     }
 
     /**
+     * Returns word count trend data aligned to the same time buckets as getTrendData.
+     *
+     * Monthly (year set): array<int, int> keyed 1–12, zero-filled.
+     * Yearly (all-time): zero-filled against $trendData keys so years with no
+     * word data (all entries lack a word count) don't shift chart points.
+     *
+     * @param array<int, int> $trendData the output of getTrendData, used to align yearly keys
+     * @return array<int, int>
+     */
+    public function getWordTrendData(User $user, ?int $year, array $trendData): array
+    {
+        if ($year !== null) {
+            return $this->readingEntryRepository->sumWordsByMonth($user, $year);
+        }
+
+        $sums = $this->readingEntryRepository->sumWordsByYear($user);
+
+        $aligned = [];
+        foreach (array_keys($trendData) as $key) {
+            $aligned[$key] = $sums[$key] ?? 0;
+        }
+
+        return $aligned;
+    }
+
+    /**
      * Returns reading entry counts bucketed by work word length (AO3-standard ranges).
      *
      * @return array{under1k: int, k1_10k: int, k10_50k: int, k50_100k: int, over100k: int}

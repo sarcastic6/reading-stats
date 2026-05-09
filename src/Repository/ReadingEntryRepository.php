@@ -647,6 +647,85 @@ class ReadingEntryRepository extends ServiceEntityRepository
     }
 
     /**
+     * Sums work word counts per month for completed entries in the given year.
+     * Returns array<int, int> keyed 1–12, zero-filled.
+     *
+     * PHP grouping is used instead of MONTH() for DB portability.
+     * Entries with no word count on the work are excluded from the sum.
+     *
+     * @return array<int, int>
+     */
+    public function sumWordsByMonth(User $user, int $year): array
+    {
+        $yearStart = new \DateTimeImmutable("$year-01-01");
+        $yearEnd   = new \DateTimeImmutable("$year-12-31");
+
+        $rows = $this->createQueryBuilder('re')
+            ->select('re.dateFinished', 'w.words')
+            ->innerJoin('re.status', 's')
+            ->innerJoin('re.work', 'w')
+            ->where('re.user = :user')
+            ->andWhere('s.countsAsRead = :countsAsRead')
+            ->andWhere('re.dateFinished >= :yearStart')
+            ->andWhere('re.dateFinished <= :yearEnd')
+            ->andWhere('w.words IS NOT NULL')
+            ->setParameter('user', $user)
+            ->setParameter('countsAsRead', true)
+            ->setParameter('yearStart', $yearStart, Types::DATE_IMMUTABLE)
+            ->setParameter('yearEnd', $yearEnd, Types::DATE_IMMUTABLE)
+            ->getQuery()
+            ->getArrayResult();
+
+        $sums = array_fill_keys(range(1, 12), 0);
+        foreach ($rows as $row) {
+            $date = $row['dateFinished'];
+            if ($date instanceof \DateTimeInterface) {
+                $sums[(int) $date->format('n')] += (int) $row['words'];
+            }
+        }
+
+        return $sums;
+    }
+
+    /**
+     * Sums work word counts per calendar year for completed entries.
+     * Returns array<int, int> keyed by year, sorted ascending.
+     *
+     * PHP grouping is used instead of YEAR() for DB portability.
+     * Entries with no word count on the work are excluded from the sum.
+     *
+     * @return array<int, int>
+     */
+    public function sumWordsByYear(User $user): array
+    {
+        $rows = $this->createQueryBuilder('re')
+            ->select('re.dateFinished', 'w.words')
+            ->innerJoin('re.status', 's')
+            ->innerJoin('re.work', 'w')
+            ->where('re.user = :user')
+            ->andWhere('s.countsAsRead = :countsAsRead')
+            ->andWhere('re.dateFinished IS NOT NULL')
+            ->andWhere('w.words IS NOT NULL')
+            ->setParameter('user', $user)
+            ->setParameter('countsAsRead', true)
+            ->getQuery()
+            ->getArrayResult();
+
+        $sums = [];
+        foreach ($rows as $row) {
+            $date = $row['dateFinished'];
+            if ($date instanceof \DateTimeInterface) {
+                $y = (int) $date->format('Y');
+                $sums[$y] = ($sums[$y] ?? 0) + (int) $row['words'];
+            }
+        }
+
+        ksort($sums);
+
+        return $sums;
+    }
+
+    /**
      * Histogram of reviewStars (1–5) for the given user, zero-filled for all
      * values 1–5 so the chart always shows the full scale.
      *

@@ -216,8 +216,37 @@
                         data-controller="chart"
                         data-chart-type-value="line"
                         data-chart-labels-value="{{ trendData|keys|map(k => year ? ('stats.month.' ~ k)|trans : k)|json_encode }}"
-                        data-chart-datasets-value="{{ [{'label': 'stats.chart.entries'|trans, 'data': trendData|values, 'backgroundColor': 'rgba(59,107,82,0.12)', 'borderColor': 'rgba(59,107,82,1)', 'pointBackgroundColor': 'rgba(59,107,82,1)', 'fill': true, 'tension': 0.3}]|json_encode }}"
-                        data-chart-options-value="{{ {'plugins': {'legend': {'display': false}}, 'scales': {'y': {'ticks': {'precision': 0}, 'grid': {'color': 'rgba(221,232,228,0.6)'}}, 'x': {'grid': {'display': false}}}, 'aspectRatio': 4}|json_encode }}"
+                        data-chart-datasets-value="{{ [
+                            {
+                                'label': 'stats.chart.words'|trans,
+                                'data': wordTrendData|values,
+                                'backgroundColor': 'rgba(194,155,80,0.08)',
+                                'borderColor': 'rgba(194,155,80,1)',
+                                'pointBackgroundColor': 'rgba(194,155,80,1)',
+                                'fill': true,
+                                'tension': 0.3,
+                                'yAxisID': 'y'
+                            },
+                            {
+                                'label': 'stats.chart.entries'|trans,
+                                'data': trendData|values,
+                                'backgroundColor': 'rgba(59,107,82,0.12)',
+                                'borderColor': 'rgba(59,107,82,1)',
+                                'pointBackgroundColor': 'rgba(59,107,82,1)',
+                                'fill': true,
+                                'tension': 0.3,
+                                'yAxisID': 'y1'
+                            }
+                        ]|json_encode }}"
+                        data-chart-options-value="{{ {
+                            'plugins': {'legend': {'display': true, 'position': 'bottom', 'labels': {'boxWidth': 12, 'padding': 16}}},
+                            'scales': {
+                                'y':  {'type': 'linear', 'position': 'left',  'ticks': {'precision': 0}, 'grid': {'color': 'rgba(221,232,228,0.6)'}},
+                                'y1': {'type': 'linear', 'position': 'right', 'ticks': {'precision': 0}, 'grid': {'drawOnChartArea': false}},
+                                'x':  {'grid': {'display': false}}
+                            },
+                            'aspectRatio': 4
+                        }|json_encode }}"
                         data-chart-urls-value="{{ chartUrls.trend|json_encode }}"
                     ></canvas>
                 {% endif %}

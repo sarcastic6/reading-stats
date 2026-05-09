@@ -387,6 +387,7 @@ stats:
         monthly_trend: 'Monthly Trend'
         yearly_trend: 'Yearly Trend'
         entries: 'Entries'
+        words: 'Words'
         status_breakdown: 'Status Breakdown'
         type_breakdown: 'Type Breakdown'
         rating_distribution: 'Review Distribution'

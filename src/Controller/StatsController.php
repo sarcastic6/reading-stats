@@ -41,6 +41,7 @@ class StatsController extends AbstractController
 
         $summary = $this->statisticsService->getDashboardSummary($user, $year);
         $trendData = $this->statisticsService->getTrendData($user, $year);
+        $wordTrendData = $this->statisticsService->getWordTrendData($user, $year, $trendData);
         $ratingDistributions = $this->statisticsService->getRatingDistributions($user, $year);
         $wordCountDistribution = $this->statisticsService->getWordCountDistribution($user, $year);
         $readingPace = $this->statisticsService->getReadingPaceStats($user, $year);
@@ -75,6 +76,7 @@ class StatsController extends AbstractController
         return $this->render('stats/dashboard.html.twig', [
             'summary' => $summary,
             'trendData' => $trendData,
+            'wordTrendData' => $wordTrendData,
             'ratingDistributions' => $ratingDistributions,
             'wordCountDistribution' => $wordCountDistribution,
             'readingPace' => $readingPace,
